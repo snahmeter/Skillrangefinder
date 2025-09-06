@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Calculator</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+        label, input, button {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        #results {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Find X, Y, and Z</h1>
+    <p>Enter the values for A, B, C, and D to find the possible numbers, where **X ≥ Y** and **Y ≥ Z**.</p>
+
+    <label for="A">A (1-9):</label>
+    <input type="number" id="A" min="1" max="9" value="7">
+
+    <label for="B">B (1-9):</label>
+    <input type="number" id="B" min="1" max="9" value="4">
+
+    <label for="C">C (1-9):</label>
+    <input type="number" id="C" min="1" max="9" value="2">
+
+    <label for="D">D (10-100):</label>
+    <input type="number" id="D" min="10" max="100" value="66">
+
+    <button onclick="calculateAndDisplay()">Calculate</button>
+
+    <div id="results">
+        </div>
+
+    <script>
+        /**
+         * Calculates possible values for X, Y, and Z based on the given equation and constraints.
+         * @param {number} A - The first digit of X (1-9).
+         * @param {number} B - The first digit of Y (1-9).
+         * @param {number} C - The first digit of Z (1-9).
+         * @param {number} D - The result of (X-Y) + (X-Z) + 10 (10-100).
+         * @returns {Array<object>} An array of objects, where each object represents a possible solution {X, Y, Z}.
+         */
+        function calculatePossibleValues(A, B, C, D) {
+            const solutions = [];
+
+            for (let x = A * 10; x <= A * 10 + 9; x++) {
+                for (let y = B * 10; y <= B * 10 + 9; y++) {
+                    for (let z = C * 10; z <= C * 10 + 9; z++) {
+                        // Check the new constraints first to optimize the process
+                        if (x >= y && y >= z) {
+                            // Then check the original equation
+                            if ((x - y) + (x - z) + 10 === D) {
+                                solutions.push({ X: x, Y: y, Z: z });
+                            }
+                        }
+                    }
+                }
+            }
+            return solutions;
+        }
+
+        /**
+         * Reads input values, calculates solutions, and displays them on the page.
+         */
+        function calculateAndDisplay() {
+            const A = parseInt(document.getElementById('A').value, 10);
+            const B = parseInt(document.getElementById('B').value, 10);
+            const C = parseInt(document.getElementById('C').value, 10);
+            const D = parseInt(document.getElementById('D').value, 10);
+
+            if (isNaN(A) || isNaN(B) || isNaN(C) || isNaN(D)) {
+                document.getElementById('results').innerHTML = '<p style="color: red;">Please enter valid numbers for all fields.</p>';
+                return;
+            }
+
+            const possibleSolutions = calculatePossibleValues(A, B, C, D);
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = ''; // Clear previous results
+
+            if (possibleSolutions.length > 0) {
+                let htmlContent = '<h3>Possible Solutions Found:</h3><ul>';
+                possibleSolutions.forEach(sol => {
+                    htmlContent += `<li>X = ${sol.X}, Y = ${sol.Y}, Z = ${sol.Z}</li>`;
+                });
+                htmlContent += '</ul>';
+                resultsDiv.innerHTML = htmlContent;
+            } else {
+                resultsDiv.innerHTML = '<p>No solutions found for the given inputs and constraints.</p>';
+            }
+        }
+    </script>
+
+</body>
+</html>
